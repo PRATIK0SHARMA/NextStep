@@ -1,87 +1,168 @@
 # NextStep
 
-**Start a repair request. Leave it. Return without starting over.**
+### Appliance repair booking, one conversation at a time.
 
-A complete Alexa+ track prototype with a working web experience, persistent repair-booking workflow, an official-SDK Streamable HTTP MCP server, and optional local/cloud LLM planning. The frontend and backend run from one Python process.
+NextStep is a voice-enabled repair appointment assistant that turns a conversation into a saved, reviewable booking. Describe the problem, set your preferences, compare appointments, and return later without starting over.
 
-**Release status:** deployable, production-oriented hackathon prototype. Fictional service providers; no real dispatch, payments, Amazon account linking, or claim of commercial production certification. See `docs/VALIDATION.md` for exactly what was tested.
+**[Try the live demo](https://nextstep-298t.onrender.com)** · **[Source code](https://github.com/PRATIK0SHARMA/NextStep)**
 
-## Start on Windows
+> Public hackathon demo — no signup or access code required. Providers and appointments are fictional; no technician is dispatched and no payment is taken. The free hosting service may take a moment to wake up after inactivity.
 
-Extract into a NEW folder, for example `NEXTSTEP_COMPLETE`. Do not overwrite your previous project or copy its database into this release.
+![NextStep repair workspace](docs/screenshots/start.png)
+
+*Project screenshot; the live interface may include newer controls.*
+
+## Try it in two minutes
+
+1. Open the [live app](https://nextstep-298t.onrender.com).
+2. Type: **“My fan is rattling in Central. Find a visit tomorrow afternoon under 500 rupees.”**
+3. Compare the displayed providers and choose a slot, or say **“Choose option 2.”**
+4. Try **Save & leave**, then resume the request from **Saved requests**.
+5. Review the provider, date, time and visit fee, then click **Confirm booking**.
+6. Find the confirmation reference in **Appointments**.
+
+To use voice, allow microphone access and click the microphone button. Review the transcript before sending. Turn **Speaker: on** to hear new assistant replies; **Read reply** repeats the latest reply and **Stop speaking** stops playback. Automatic speech starts off after a page refresh. Browser support and available voices vary.
+
+## What NextStep does
+
+- **Conversational preferences:** collect appliance, issue, zone, date, time and maximum visit fee over multiple messages.
+- **Matching appointments:** compare available providers, ordered by visit fee.
+- **Save and resume:** retain conversations, preferences and unfinished requests in the database.
+- **Safe preference changes:** invalidate an old selection when requirements change and check availability again on resume.
+- **Explicit confirmation:** selecting an option never creates a booking; the final browser button does.
+- **Duplicate-booking protection:** transactions, unique constraints, revision checks and idempotent confirmation requests protect booking operations.
+- **Separate workspaces:** anonymous session cookies keep each browser's requests separate.
+- **Voice input and output:** browser speech recognition and text-to-speech complement the typed interface.
+- **MCP integration:** six scoped tools let an external assistant work with requests; MCP tools cannot confirm bookings.
+
+The demo supports **fans, refrigerators and washing machines** in **North, Central and South** zones. Appointments cover the next **14 days**, with times interpreted in **Asia/Kolkata**. Amounts are **INR inspection/visit fees**, excluding parts and repair charges.
+
+## How it works
+
+The browser sends typed or transcribed messages to FastAPI. A narrow rule handler resolves explicit commands; other messages use the configured model to propose one bounded action. Pydantic validates the plan, and the service layer checks ownership, current revision and appointment availability before changing data. Replies describe the resulting application state.
+
+The model cannot confirm bookings, execute arbitrary code or make payments. Provider errors are reported rather than silently switching to the rule-based demo.
+
+| Layer | Technology |
+|---|---|
+| Interface | HTML, CSS and JavaScript |
+| Voice | Browser Web Speech APIs |
+| API and application logic | Python, FastAPI, Pydantic |
+| AI planning | Groq/OpenAI-compatible API, or local Ollama |
+| Local storage | SQLite |
+| Hosted storage | PostgreSQL on Neon |
+| Assistant integration | MCP SDK, Streamable HTTP |
+| Hosting and checks | Render, GitHub Actions, pytest |
+
+The frontend and API are served by the same Python application. No separate frontend server or Node build is required.
+
+## Run locally
+
+Use **Python 3.12** and Git.
+
+```bash
+git clone https://github.com/PRATIK0SHARMA/NextStep.git
+cd NextStep
+python -m venv .venv
+```
+
+**Windows PowerShell** — activation is optional with these commands:
 
 ```powershell
-cd C:\Users\sharm\OneDrive\Desktop\NEXTSTEP_COMPLETE
-python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.lock.txt
 Copy-Item .env.example .env
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 ```
 
-Use the folder containing this README, `app`, and `frontend`; ZIP extraction may add an extra parent folder. Open **http://127.0.0.1:8000**. Do not start the old port-5173 static server. Activation is optional because these commands use the environment's Python directly. Python 3.12 is recommended; source uses Python 3.11+ syntax. Dependencies and runtime were tested on Python 3.12/Linux.
+**macOS / Linux:**
 
-Database and 6 fictional providers are initialized automatically. New slots cover the next 14 days (168 slots on first startup), refreshed hourly and on restart. No API key is required for the labeled rule-based demo. For natural language with a real model, follow `docs/AI_SETUP.md`.
-
-After installation, you can double-click `start.bat`.
-
-## What is implemented
-
-- Full responsive workspace: chat, repair form, comparison cards, confirmation, saved tasks and appointments.
-- SQLite-backed task, selection, conversation and audit persistence.
-- Browser workspace isolation using hashed opaque session tokens and HttpOnly cookies.
-- Current-revision checks; preference changes invalidate previous selections.
-- Transactional slot booking with unique constraints and idempotent confirmation retries.
-- Dynamic budget, zone, appliance, date and time filtering.
-- Resume checks for stale/taken slots.
-- One bounded AI planner with schema validation; grounded service responses.
-- Ollama native API and configurable OpenAI-compatible chat adapters.
-- Explicit deterministic demo mode, never an undisclosed model fallback.
-- Six authenticated MCP tools over Streamable HTTP; negotiated protocol 2025-11-25.
-- Browser-only final confirmation: model and MCP clients cannot autonomously confirm.
-- Optional browser dictation (where supported); transcript reviewed before sending.
-- Production configuration gate, origin checks, request-size limits, rate limits, security headers.
-- Docker, Compose, CI workflow, backup script, MCP smoke client and automated tests.
-
-## Fast demo
-
-1. Click the sample fan request and submit the form.
-2. Select a provider but do not confirm.
-3. Save & leave, reload, and resume.
-4. Type `under ₹400 tomorrow morning` to change preferences and invalidate the old selection.
-5. Select again and explicitly confirm.
-6. Open Appointments and show the saved booking reference.
-7. Optionally use MCP connection to generate a scoped token, then run the MCP smoke script.
-
-All providers are fictional. Monetary values are INR **visit/inspection fees**, not the final repair cost. Times are Asia/Kolkata.
-
-## Documentation map
-
-| Document | Purpose |
-|---|---|
-| `docs/QUICKSTART_WINDOWS.md` | Exact setup and integration with your current work |
-| `docs/AI_SETUP.md` | Enable Ollama or a compatible cloud endpoint |
-| `docs/ARCHITECTURE.md` | How the system works and why these choices were made |
-| `docs/API_AND_MCP.md` | API payloads, MCP client integration and security boundary |
-| `docs/DEPLOYMENT.md` | Render, Docker, persistent storage and operations |
-| `docs/VALIDATION.md` | Test evidence, untested integrations and release limits |
-| `docs/PRESENTATION_2_3_MIN.md` | Spoken presentation and demo cues |
-| `docs/SUBMISSION.md` | Alexa+ track mapping and submission checklist |
-| `docs/FRICTION_LOG.md` | Real development observations and feedback template |
-
-## Test
-
-```powershell
-.\.venv\Scripts\python.exe -m pytest -q
+```bash
+.venv/bin/python -m pip install -r requirements.lock.txt
+cp .env.example .env
+.venv/bin/python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
 ```
 
-The lock file includes the tested development dependencies. Tests use temporary databases, never your workspace database. Browser tests are documented separately in the validation report.
+Open **http://127.0.0.1:8000**. Startup creates the database and seeds six fictional providers automatically. Leave `DATABASE_URL` blank for local SQLite. The default rule-based demo needs no API key.
 
-## Production deployment boundaries
+If a `.env` already exists, edit it instead of copying over it.
 
-Use HTTPS, a long ACCESS_CODE and a persistent volume with APP_ENV=production. Run exactly one service replica; move to a managed transactional database before horizontal scaling. This is anonymous browser-workspace access, not a full identity/account system. Clearing cookies or session expiry loses access to that workspace. Provide a dedicated access code to judges and keep the same deployment origin and volume throughout judging.
+## Configure AI
 
-Read `docs/DEPLOYMENT.md` before deploying. No hosting account was accessed or live deployment performed as part of this handoff.
+For an OpenAI-compatible provider such as Groq, edit your private `.env`:
+
+```dotenv
+LLM_PROVIDER=compatible
+LLM_BASE_URL=https://api.groq.com/openai/v1
+LLM_MODEL=YOUR_AVAILABLE_JSON_CAPABLE_MODEL_ID
+LLM_API_KEY=YOUR_PRIVATE_API_KEY
+LLM_TIMEOUT=30
+```
+
+Use a model available in your account that accepts JSON-object output. Restart the server after changing settings. Model access, quotas and costs depend on the provider; a ChatGPT subscription does not supply API credits.
+
+For local Ollama or additional configuration, see [AI setup](docs/AI_SETUP.md). Check current model availability instead of assuming an older example model ID is still supported.
+
+Never commit `.env`, database connection strings, API keys or database backups. Cloud AI receives the request context and recent conversation text; use fictional data when trying the demo. Browser speech recognition may use a remote speech service.
+
+## Deployment
+
+The live app uses **Render for FastAPI and the frontend**, with **Neon PostgreSQL for persistence**. See the [step-by-step free deployment guide](docs/FREE_DEPLOYMENT.md).
+
+Core hosted settings:
+
+```dotenv
+APP_ENV=production
+PUBLIC_ORIGIN=https://YOUR-SERVICE.onrender.com
+DATABASE_URL=YOUR_PRIVATE_POSTGRESQL_CONNECTION_URL
+```
+
+Add your model settings through the host's environment settings. This public version does **not** require `ACCESS_CODE`, even though earlier documentation may mention it. Keep HTTPS and production mode enabled.
+
+Run **one worker and one instance** for this small-demo architecture. PostgreSQL transactions use an advisory lock to preserve the original serialized booking behavior; this is not designed for high-throughput scaling. Free plans have quotas and can suspend idle compute. The local SQLite backup script does not back up PostgreSQL.
+
+## Tests
+
+```bash
+python -m pytest -q
+```
+
+Run the command with your virtual environment's Python. GitHub Actions is configured to run the backend suite against both SQLite and a disposable PostgreSQL service. Tests cover ownership isolation, preference validation, stale revisions, conflicting reservations, repeat confirmation requests, public-session behavior, request limits and model-adapter contracts.
+
+**Never point `NEXTSTEP_TEST_DATABASE_URL` at your deployed database.** The PostgreSQL tests reset the test database's public schema. Passing automated tests does not establish live model accuracy or cross-browser voice compatibility.
+
+## MCP and hackathon scope
+
+NextStep includes a Streamable HTTP endpoint at `/mcp/`. Open **MCP connection** in the app to generate a scoped, expiring bearer token for the current workspace. Treat that token as a secret.
+
+See [API and MCP documentation](docs/API_AND_MCP.md) for client setup and tool details.
+
+Built as an **Alexa+ track hackathon prototype**, NextStep demonstrates conversational task completion, persistence and assistant-tool interoperability. It is **not an Amazon-certified Alexa skill** and does not include Alexa account linking. Browser voice features operate independently of Alexa.
+
+## Limitations
+
+- Fictional providers and demo bookings only; no real dispatch, payment, cancellation or rescheduling of confirmed bookings.
+- Final booking confirmation requires a button click; this is not a fully hands-free workflow.
+- Anonymous browser sessions are not user accounts. Clearing cookies, using another browser, changing the domain or session expiry can remove access to that workspace. Sessions default to 30 days.
+- Speech transcription and AI interpretation can make mistakes. Review the details before confirming; the edit form remains available.
+- Public access retains basic request limits, but these are not a complete abuse-prevention or commercial security solution.
+
+## Documentation
+
+| Guide | Purpose |
+|---|---|
+| [Free deployment](docs/FREE_DEPLOYMENT.md) | Current Render + Neon setup |
+| [AI setup](docs/AI_SETUP.md) | Cloud and local model configuration |
+| [Architecture](docs/ARCHITECTURE.md) | Service design and implementation rationale |
+| [API and MCP](docs/API_AND_MCP.md) | Endpoints and external assistant integration |
+| [Demo prompts](docs/DEMO_PROMPTS.md) | Example interactions |
+| [Presentation notes](docs/PRESENTATION_2_3_MIN.md) | Short pitch and demo cues |
+
+Some guides describe earlier release choices. This README reflects public access and PostgreSQL support; the free deployment guide's older access-code instructions are no longer required.
+
+## Author
+
+Built by [Pratik Sharma](https://github.com/PRATIK0SHARMA).
 
 ## License
 
-MIT. External Python dependencies retain their own licenses. No third-party image assets are included.
+[MIT](LICENSE). Dependencies retain their respective licences.

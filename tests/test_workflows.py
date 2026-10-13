@@ -139,7 +139,8 @@ def test_origin_header_and_body_limits(client):
 def test_access_code(client,monkeypatch):
     monkeypatch.setattr(settings,'access_code','a-very-long-secret-code')
     client.cookies.clear()
-    assert client.post('/api/session',json={'access_code':'wrong'},headers=H).status_code==401
+    assert client.post('/api/session',json={},headers=H).status_code==200
+    assert client.get('/api/config').json()['access_required'] is False
     assert client.post('/api/session',json={'access_code':'a-very-long-secret-code'},headers=H).status_code==200
 
 def test_mcp_protocol_and_scoping(client):
@@ -206,6 +207,22 @@ def test_invalid_model_plan_cannot_book(client,monkeypatch):
 
 def test_production_configuration_guard(monkeypatch):
     from app.config import Settings
-    with pytest.raises(ValueError):Settings(_env_file=None,app_env='production',access_code='short',public_origin='https://example.com').validate_release()
+    Settings(_env_file=None,app_env='production',access_code='',public_origin='https://example.com').validate_release()
     with pytest.raises(ValueError):Settings(_env_file=None,app_env='production',access_code='a'*24,public_origin='http://example.com').validate_release()
     Settings(_env_file=None,app_env='production',access_code='a'*24,public_origin='https://example.com').validate_release()
+
+def test_public_sessions_keep_limits(client):
+    main_module.rates.clear()
+    for _ in range(10):
+        assert client.post('/api/session',json={},headers=H).status_code==200
+    assert client.post('/api/session',json={},headers=H).status_code==429
+    main_module.rates.clear()
+
+def test_public_production_cookie(client,monkeypatch):
+    monkeypatch.setattr(settings,'app_env','production')
+    monkeypatch.setattr(settings,'access_code','legacy-code-still-in-render')
+    client.cookies.clear()
+    r=client.post('/api/session',json={},headers=H)
+    assert r.status_code==200
+    cookie=r.headers['set-cookie'].lower()
+    assert 'httponly' in cookie and 'secure' in cookie and 'samesite=strict' in cookie

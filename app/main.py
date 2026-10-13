@@ -1,5 +1,4 @@
 import asyncio
-import hmac
 import logging
 import secrets
 import sqlite3
@@ -127,7 +126,7 @@ def health():
 
 @app.get('/api/config')
 def config():
-    return {'mode':settings.llm_provider,'access_required':bool(settings.access_code),
+    return {'mode':settings.llm_provider,'access_required':False,
             'today':db.today().isoformat(),'timezone':'Asia/Kolkata','fictional_providers':True}
 
 @app.post('/api/session')
@@ -136,8 +135,6 @@ def session(body:Access,request:Request):
         sid=auth.session_owner(request.cookies.get(auth.COOKIE))
         return {'authenticated':True,'workspace':sid[:8]}
     except service.DomainError:pass
-    if settings.access_code and not hmac.compare_digest(body.access_code,settings.access_code):
-        raise service.DomainError(401,'Enter the workspace access code.')
     sid,token=auth.new_session()
     response=JSONResponse({'authenticated':True,'workspace':sid[:8]})
     response.set_cookie(auth.COOKIE,token,max_age=settings.session_days*86400,httponly=True,

@@ -25,8 +25,6 @@ class Settings(BaseSettings):
         if self.database_url and not self.database_url.startswith(('postgresql://', 'postgres://')):
             raise ValueError('DATABASE_URL must be a PostgreSQL connection URL')
         if self.app_env == 'production':
-            if len(self.access_code) < 16:
-                raise ValueError('Production requires ACCESS_CODE with at least 16 characters')
             if not self.public_origin.startswith('https://'):
                 raise ValueError('Production requires an HTTPS PUBLIC_ORIGIN')
 

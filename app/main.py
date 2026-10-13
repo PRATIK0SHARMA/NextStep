@@ -31,7 +31,7 @@ async def lifespan(app):
             await asyncio.sleep(3600)
             try:
                 await asyncio.to_thread(db.seed)
-            except sqlite3.Error:
+            except db.DATABASE_ERRORS:
                 logger.error('scheduled_seed_failed')
     maintenance=asyncio.create_task(refresh_slots())
     try:
@@ -68,6 +68,9 @@ async def validation_error(request,exc):
     # Do not echo user content or provider responses into errors.
     return JSONResponse({'detail':'Invalid preferences. Check the appliance, zone, budget, and next-14-day date.'},status_code=422)
 
+@app.exception_handler(db.psycopg.OperationalError)
+@app.exception_handler(db.psycopg.errors.QueryCanceled)
+@app.exception_handler(db.psycopg.errors.LockNotAvailable)
 @app.exception_handler(sqlite3.OperationalError)
 async def database_busy(request,exc):
     logger.error('database_operation_failed')

@@ -6,6 +6,7 @@ ROOT = Path(__file__).resolve().parent.parent
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=str(ROOT / '.env'), extra='ignore')
     app_env: str = 'development'
+    database_url: str = ''
     database_path: str = str(ROOT / 'data' / 'nextstep.sqlite3')
     public_origin: str = 'http://127.0.0.1:8000'
     access_code: str = ''
@@ -21,6 +22,8 @@ class Settings(BaseSettings):
             raise ValueError('LLM_PROVIDER must be demo, ollama, or compatible')
         if self.llm_provider != 'demo' and not self.llm_model:
             raise ValueError('Set LLM_MODEL for the selected provider')
+        if self.database_url and not self.database_url.startswith(('postgresql://', 'postgres://')):
+            raise ValueError('DATABASE_URL must be a PostgreSQL connection URL')
         if self.app_env == 'production':
             if len(self.access_code) < 16:
                 raise ValueError('Production requires ACCESS_CODE with at least 16 characters')

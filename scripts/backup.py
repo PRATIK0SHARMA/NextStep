@@ -4,6 +4,9 @@ import sqlite3
 from pathlib import Path
 from app.config import settings
 
+if settings.database_url:
+    raise SystemExit('PostgreSQL is configured. Use pg_dump with PGDATABASE set privately to DATABASE_URL; this script backs up SQLite only.')
+
 parser=argparse.ArgumentParser()
 parser.add_argument('destination')
 args=parser.parse_args()

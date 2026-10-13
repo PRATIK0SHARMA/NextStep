@@ -11,6 +11,15 @@ from app import db,service,auth,agent
 H={'X-NextStep':'1'}
 @pytest.fixture
 def client(tmp_path,monkeypatch):
+    import os
+    pg_url=os.environ.get('NEXTSTEP_TEST_DATABASE_URL', '')
+    monkeypatch.setattr(settings,'database_url',pg_url)
+    if pg_url:
+        # ONLY use a disposable test database: this resets its public schema.
+        import psycopg
+        with psycopg.connect(pg_url, autocommit=True) as connection:
+            connection.execute('DROP SCHEMA public CASCADE')
+            connection.execute('CREATE SCHEMA public')
     monkeypatch.setattr(settings,'database_path',str(tmp_path/'test.sqlite3'))
     monkeypatch.setattr(settings,'llm_provider','demo')
     monkeypatch.setattr(settings,'access_code','')
@@ -192,7 +201,7 @@ def test_invalid_model_plan_cannot_book(client,monkeypatch):
     def transport(req):return httpx.Response(200,json={'choices':[{'message':{'content':json.dumps({'action':'confirm','confirmed':True})}}]})
     monkeypatch.setattr(agent.httpx,'AsyncClient',lambda **kw:original(transport=httpx.MockTransport(transport),**kw))
     t=select(client,create(client))
-    r=client.post(f"/api/tasks/{t['id']}/messages",json={'text':'confirm','revision':t['revision']},headers=H)
+    r=client.post(f"/api/tasks/{t['id']}/messages",json={'text':'Please finalize this request using the AI','revision':t['revision']},headers=H)
     assert r.json()['agent_status']=='unavailable' and r.json()['booking'] is None
 
 def test_production_configuration_guard(monkeypatch):

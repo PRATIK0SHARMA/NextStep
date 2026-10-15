@@ -116,7 +116,7 @@ PUBLIC_ORIGIN=https://YOUR-SERVICE.onrender.com
 DATABASE_URL=YOUR_PRIVATE_POSTGRESQL_CONNECTION_URL
 ```
 
-Add your model settings through the host's environment settings. This public version does **not** require `ACCESS_CODE`, even though earlier documentation may mention it. Keep HTTPS and production mode enabled.
+Add your model settings through the host's environment settings. This public version does **not** require `ACCESS_CODE`. Keep HTTPS and production mode enabled.
 
 Run **one worker and one instance** for this small-demo architecture. PostgreSQL transactions use an advisory lock to preserve the original serialized booking behavior; this is not designed for high-throughput scaling. Free plans have quotas and can suspend idle compute. The local SQLite backup script does not back up PostgreSQL.
 
@@ -157,7 +157,7 @@ Built as an **Alexa+ track hackathon prototype**, NextStep demonstrates conversa
 | [Demo prompts](docs/DEMO_PROMPTS.md) | Example interactions |
 | [Presentation notes](docs/PRESENTATION_2_3_MIN.md) | Short pitch and demo cues |
 
-Some guides describe earlier release choices. This README reflects public access and PostgreSQL support; the free deployment guide's older access-code instructions are no longer required.
+See [validation evidence](docs/VALIDATION.md), [product feedback](docs/FRICTION_LOG.md), and the [submission checklist](docs/SUBMISSION.md) for review details.
 
 ## Author
 

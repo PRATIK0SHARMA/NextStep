@@ -1,55 +1,64 @@
-# NextStep — 2–3 minute presentation
+# NextStep — English demo script under three minutes
 
-Target: approximately 2 minutes 40 seconds at a natural pace, including short interaction pauses. Rehearse once with a timer. Keep the final video below three minutes. Say “rule-based demo” if you have not enabled and checked a real model.
+Target: 2:40–2:50 including short pauses. The spoken script is 274 words. Read only the quoted paragraphs, not headings or screen directions. Rehearse and time the final exported video; the word count alone does not guarantee duration.
 
-## Spoken script with screen cues
+## 0:00–0:18 — Lead with the strongest feature
 
-**0:00–0:25 — Show the workspace**
+Screen: start with a saved, unconfirmed request. Click Resume and show restored details.
 
-Hello, we are Team THE MORTAL, and this is NextStep: an assistant that helps people finish everyday tasks, even when life interrupts them.
+> What happens when you start booking a repair, get interrupted, and return later? With NextStep, you pick up where you left off. It remembers your preferences and checks which appointments are still available.
+>
+> I'm Pratik, and this is NextStep, our appliance-repair assistant for the Alexa-plus track.
 
-Booking a repair sounds simple, but it involves several small decisions: finding a provider, checking availability, comparing visit fees, and confirming a time. If someone stops halfway through, they often have to start again.
+## 0:18–0:55 — Demonstrate voice and matching
 
-**0:25–0:55 — Enter a request and display options**
+Screen: start a new request. Enable Speaker: on before recording. Dictate the next sentence, review the transcript and click Send. Let one short assistant reply play; do not narrate over it.
 
-NextStep keeps that progress.
+> My fan is rattling in Central. Find a visit tomorrow afternoon under five hundred rupees.
+>
+> The browser turns my voice into text. NextStep collects the details and finds matching appointments from our fictional provider directory. I can compare the visit fees and choose a suitable option.
 
-Here, I need a fan repaired in the Central zone tomorrow afternoon, with a visit fee below five hundred rupees. The application checks its provider directory and available slots, then presents matching options. These are fictional providers for the demonstration, but the availability checks and database operations are real.
+## 0:55–1:25 — Show continuity
 
-I will select one appointment, but I will not confirm it yet.
+Screen: select, Save & leave, refresh, resume. Keep the screen recording continuous enough to show these are real operations.
 
-**0:55–1:25 — Save, refresh and resume**
+> I haven't booked anything yet. I'll save this request, refresh the page, and resume it.
+>
+> My conversation and preferences are still here. NextStep checks availability again instead of blindly trusting an old selection.
 
-Now I can leave the request and return later. After refreshing and resuming, NextStep restores my requirements and checks availability again. It remembers what I was doing without assuming that an old appointment is still available.
+## 1:25–1:55 — Change and confirm
 
-This is the main idea: continuity that helps someone complete a task.
+Screen: send “Change the visit to tomorrow morning and keep the fee under 400.” Show cleared selection, choose an available option and click Confirm demo booking.
 
-**1:25–1:55 — Change budget/time, select a new option**
+> Now my plans have changed. I need a morning visit under four hundred rupees. The previous selection is cleared, and the options update.
+>
+> I review the new appointment and click Confirm booking. The reference appears after the database confirms it. The AI cannot approve a booking on my behalf.
 
-Suppose my plans change. I now need a morning visit within four hundred rupees. NextStep updates those requirements and clears the previous selection, so an outdated choice cannot accidentally be booked.
+## 1:55–2:30 — Tools and Alexa+ relevance
 
-I select a suitable appointment, review the details, and explicitly confirm it. The booking reference appears only after the database transaction succeeds. Repeated confirmation requests do not create duplicate bookings.
+Screen: use a simple text card or sanitized architecture view. If a hosted MCP smoke test has been run, show its tool names without tokens; otherwise show repository tool definitions and label them as code.
 
-**1:55–2:25 — Show MCP tools or briefly show the connection panel**
+> FastAPI handles the backend, Groq supports language understanding, and Pydantic validates the proposed actions. Neon PostgreSQL stores requests and bookings, while Render hosts the app. Browser speech tools provide voice input and spoken replies.
+>
+> For the Alexa-plus track, we implemented a self-hosted MCP server using the open-source Python SDK, with protocol version twenty twenty-five, eleven, twenty-five. External assistants can manage requests through six scoped tools. Final confirmation stays in the browser.
 
-For the Alexa+ track, we built a working Streamable HTTP MCP server and our own web experience. MCP clients can create, resume, update, and select repair requests using scoped access. Final booking approval stays with the user in the browser.
+## 2:30–2:45 — Close on the result
 
-The conversational layer can use a local Ollama model or a compatible cloud model. A clearly labeled rule-based mode is also available for reproducible testing.
+Screen: show confirmed appointment and your own text end card with nextstep-298t.onrender.com.
 
-**2:25–2:45 — Show the confirmed appointment**
+> This is a working demo with fictional providers, not a live technician service or a connected Echo skill. NextStep makes unfinished tasks easier to return to—and easier to finish.
 
-We tested the core workflow, including changed requirements, competing bookings, retry handling, and workspace isolation.
+## Recording and upload checklist
 
-Our current scope is appliance repair. The same approach could later support other appointment workflows. NextStep's goal is simple: help people return to an unfinished task and confidently take the next step.
-
-Thank you.
-
-## Recording checklist
-
-- Start with a fresh request in a familiar browser workspace.
-- Use a date in the next 14 days; say “tomorrow” rather than a fixed past date.
-- Prepare your model configuration before recording, or explicitly disclose rule-based mode.
-- Show the full MCP tool list with `scripts.mcp_smoke` if time permits. Never display the token or API key.
-- Do not claim official Alexa installation, real technician dispatch, deployed customer traction, or measured business impact.
-- Show actual interactions. Avoid a presentation consisting only of slides.
-- If speaking slowly, shorten the architecture paragraph; keep the resume and changed-plan demonstration.
+- Open the hosted app before recording so a cold start is not the opening scene.
+- Prepare one saved request for the opening. Use a fresh request for the main flow.
+- Use real available options and future dates; do not splice a failure into an apparent success.
+- Keep narration clear and in English. If API latency runs long, shorten commentary or use clearly indicated cuts; do not claim real-time speed from edited footage.
+- Capture only the app area. Avoid unrelated browser tabs, dashboards, third-party logos and credentials.
+- Use original narration and screen recordings. No copyrighted music or external footage without permission; a silent background is fine.
+- Use text tool names, not decorative third-party logos. Do not imply sponsorship or certification.
+- Export under 3:00, preferably 2:45. Check actual duration after upload.
+- Publish on YouTube or Vimeo with visibility set to PUBLIC; verify playback signed out.
+- Suggested title: NextStep | Voice-enabled repair booking and resume | Hackathon demo.
+- Put complete product feedback in the written submission; this video covers only the important tools.
+- No Amazon-specific SDK or AWS service has been verified in this implementation. MCP is not an Amazon-owned SDK. Do not add Bedrock, AgentCore, Strands or Kiro claims.

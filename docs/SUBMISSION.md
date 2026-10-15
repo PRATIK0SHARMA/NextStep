@@ -1,49 +1,50 @@
-# Alexa+ track submission preparation
+# Submission checklist — NextStep
 
-## Suggested title
+Live app: https://nextstep-298t.onrender.com
+Repository: https://github.com/PRATIK0SHARMA/NextStep
+GitHub username: PRATIK0SHARMA
 
-NextStep — Finish what you started
+## Description draft
 
-## Suggested short description
+NextStep is a voice-enabled repair appointment assistant that helps users return to unfinished requests and complete them safely. Users describe a fault, choose preferences, compare fictional providers, save progress and resume later. Changed requirements clear stale selections. A validated planner supports conversation; transactional booking logic checks ownership, availability and revision. Final confirmation is a browser action. PostgreSQL stores the hosted state, while a self-hosted MCP server exposes six scoped request-management tools.
 
-NextStep is a persistent repair-booking assistant that helps users continue unfinished requests, adapt when plans change, and confirm appointments safely. It combines a conversational web experience with a working authenticated Streamable HTTP MCP server. Its core workflows preserve task state, recheck availability, invalidate stale selections, and prevent duplicate bookings.
+## Track and mini challenges
 
-## Track fit
+- Intended primary track: **Alexa+ — self-hosted MCP server**, with an accompanying web experience.
+- The rules checked on 15 October 2026 accept a self-hosted MCP server with minimum protocol version 2025-11-25. Repeat the actual client smoke test for the final build.
+- No actual Echo connection, Alexa account linking, Amazon-specific SDK or certification is claimed.
+- **AWS Builder:** not claimed; no verified qualifying direct integration or Kiro Crew usage.
+- **Open Source:** not claimed on the main repository alone. If entering, provide a genuine additional contribution URL, project URL, GitHub username, and explanation of what changed/how it works/why it matters.
 
-Primary: Alexa+. The implementation uses the official Python MCP SDK at runtime. The server negotiates protocol 2025-11-25 over Streamable HTTP. The repository includes the server, a client smoke test and the complete simulated web experience. No gated Alexa+ SDK or actual Echo device is required for this submitted path under the reviewed rules.
+## Required submission material
 
-The web planner uses shared service functions directly; external MCP clients use the same functions through protocol tools. Explain this accurately. This is not Amazon-certified, not a private-preview add-on, and not connected to actual Alexa accounts.
+- [ ] Public working GitHub repository with open-source licence and setup instructions.
+- [ ] Live app URL and clear testing instructions; this version needs no access code.
+- [ ] Public English YouTube/Vimeo video, strictly under three minutes, showing actual function.
+- [ ] Product feedback for every directly used tool/API/SDK: purpose, positives, improvements, onboarding, repeat-use decision. Review FRICTION_LOG.md and add omitted tools.
+- [ ] Track and mini-challenge selections, with their extra fields if applicable.
+- [ ] Accurate new-versus-existing project statement below.
+- [ ] Latest GitHub CI checked; hosted flow and MCP smoke checked; no secrets in recording or repository.
+- [ ] Video viewed while signed out; final duration checked after upload.
 
-## What to submit
+## Project timing — author confirmation required
 
-- GitHub repository containing source, assets, lock file, tests, setup and this documentation.
-- Public MIT repository, or private repository shared with all required current reviewers.
-- Public YouTube/Vimeo demonstration under three minutes, in English.
-- Project description identifying implemented capabilities and fictional provider data.
-- Product feedback for every tool/API/SDK actually used.
-- Testing instructions and deployed access code if using a gated deployment.
-- Feature requests and a factual friction log if desired.
+The official submission window checked on 15 October is 31 August–23 October 2026 (Pacific time). The available development record shows NextStep work in October, but it does not prove whether any code existed before the window.
 
-Do not publish secrets. If sharing privately, review the current required usernames and invitation acceptance/expiry requirements on the rules page.
+Before submitting, choose the true statement and replace the prompts with facts:
 
-## Mini challenges
+**If entirely new:** “NextStep was created during the submission window. Development began on [verified date]. We built [verified scope] during that period.”
 
-No AWS Builder eligibility is claimed by this package: no AWS runtime or Kiro Crew usage was performed. You may add a genuine documented integration later. The Open Source mini challenge needs its own qualifying additional contribution; publishing this primary project alone should not be represented as satisfying all of that challenge's requirements.
+**If pre-existing:** “Before the submission window, NextStep contained [specific prior functionality]. During the window we added or significantly changed [specific features], implemented in [commits/dates]. The video demonstrates these additions.”
 
-## Useful demo evidence
+Documented development areas include the connected booking UI/API, persistence/resume, MCP server, planner clarification and ordinal fixes, browser speech, PostgreSQL deployment and public access. Verify their dates and attribution before using them in this answer. Do not submit both alternatives or leave placeholders.
 
-1. A persisted request resumes after refresh/server restart.
-2. A changed budget/date invalidates the old selection.
-3. A booking is confirmed only after explicit review.
-4. Tests show duplicate and competing reservation behavior.
-5. The MCP smoke client negotiates 2025-11-25, lists six tools and executes a tool.
+## Video and tool attribution
 
-## Dates from the reviewed rules
+Use PRESENTATION_2_3_MIN.md. Lead with resume, show voice and changed preferences, then explain the tools. Use original narration and app footage. Do not add third-party music, footage or logos without permission. Naming a tool in plain text does not imply certification or sponsorship.
 
-Submission deadline: October 23, 2026 at 12:00 Pacific Time (October 24 at 00:30 India Standard Time). Judging: November 9–20, 2026. Recheck the official page before submitting in case the organizer changes requirements.
+## Official sources
 
-## Sources
-
+Rules checked: 15 October 2026. Recheck before submitting; organizer decisions govern eligibility.
 - https://amazonappdev2026.devpost.com/rules
-- https://amazonappdev2026.devpost.com/resources
 - https://amazonappdev2026.devpost.com/details/faqs

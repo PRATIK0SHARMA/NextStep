@@ -16,7 +16,7 @@ flowchart TD
     C --> S
     M[MCP client] --> T[Scoped MCP tools]
     T --> S
-    S --> D[SQLite transactions]
+    S --> D[SQLite or PostgreSQL transactions]
     D --> R[Grounded results and audit]
     R --> U
 ```
@@ -25,11 +25,11 @@ flowchart TD
 
 One origin removes the cross-origin setup that complicated the earlier two-server scaffold. FastAPI serves the static frontend, authenticated JSON API and MCP endpoint. The distribution needs Python, not a Node build chain. HTML/CSS/JS retains the earlier visual direction while replacing localStorage booking logic with server operations.
 
-### Why SQLite and explicit SQL
+### Storage choices
 
-The intended deployment is one small service instance with a persistent local disk. SQLite is suitable for this bounded prototype. Parameterized SQL and explicit `BEGIN IMMEDIATE` transactions make the critical read-check-write booking sequence inspectable. Foreign keys and unique slot/task constraints are the last line of defense. WAL improves concurrent read behavior. This is not a design for multiple replicas or a distributed appointment marketplace.
+Local runs use SQLite when DATABASE_URL is blank. The hosted demo uses Neon PostgreSQL through psycopg. Parameterized SQL and unique slot/task constraints protect booking operations. SQLite uses BEGIN IMMEDIATE; PostgreSQL uses a transaction-level advisory lock to preserve serialized read/check/write behavior. This prioritizes correctness for a small demo over throughput. Run one worker/instance; redesign locking and load-test before scaling.
 
-The older instructional scaffold used SQLAlchemy. This release uses Python's sqlite3 driver and a new versioned schema. No migration from the earlier scaffold is assumed. For future scale, migrate to PostgreSQL and implement database-native row locking/conditional writes, then rerun the concurrency tests.
+Slots, messages and audit records use PostgreSQL identity columns. Dates and JSON remain text to keep the service response contract consistent. Startup initializes a fresh database; it does not import earlier local bookings. The early SQLAlchemy scaffold is not the current implementation.
 
 ### Data model
 
@@ -60,7 +60,7 @@ Preference changes clear the selected slot and increment revision. Selecting a s
 7. Mark task complete, append audit event and grounded confirmation message.
 8. Commit all changes together.
 
-Competing writers serialize under `BEGIN IMMEDIATE`. If another user books first, the next request sees an unavailable slot. A changed confirmation key cannot create a second booking for a completed task.
+Competing app transactions serialize using SQLite BEGIN IMMEDIATE or a PostgreSQL transaction-level advisory lock. If another user books first, the next request sees an unavailable slot. A changed confirmation key cannot create a second booking for a completed task.
 
 ### AI design
 
@@ -72,17 +72,17 @@ Model quality still matters: validation cannot prove the model understood a user
 
 The official SDK exposes six real tools. Tools and the browser reuse the same service layer; neither duplicates booking rules. The web AI planner calls services in-process for efficiency, while external MCP clients use Streamable HTTP. This is two interfaces to one implementation, not a claim that every browser message traverses MCP.
 
-MCP tokens are manually issued bearer credentials scoped to the browser workspace. This is not OAuth discovery, Alexa account linking or private Alexa SDK access. The supported hackathon path is a self-hosted MCP server and/or simulated Alexa+ web experience.
+MCP tokens are manually issued bearer credentials scoped to the browser workspace. This is not OAuth discovery, Alexa account linking or private Alexa SDK access. The intended Alexa+ track path is the self-hosted MCP server, accompanied by a web demonstration. A web simulation alone is not presented as proof of MCP interoperability.
 
 ### Security and operations
 
 - HttpOnly, SameSite=Strict cookies; Secure cookies in production.
-- Production requires HTTPS origin and a long shared access code before session creation.
+- Production requires an HTTPS origin. Public session creation needs no shared access code; each browser receives a separate anonymous session.
 - Origin and request header checks for mutations, trusted host checks, bounded request bodies.
 - Per-process request and chat limits; one replica only. Configure edge protection for a public deployment.
 - Model keys only in server environment; MCP/session tokens stored hashed.
 - No raw prompts, access codes or tokens intentionally logged. HTTP logs include request ID, status and duration.
-- The backend stores conversation text and preferences. SQLite is not encrypted by the application; use encrypted host storage and restrict backups.
+- The backend stores conversation text and preferences. The application does not encrypt database contents itself; restrict database access and backups, and use the hosting/database security controls.
 - Sessions expire after 30 days by default. No user account recovery, email identity or cross-device login is implemented.
 
 Before a real customer launch: add identity/recovery, consent and retention controls, deletion/export workflows, real provider contracts, monitoring/alerting, managed backups with restore drills, load testing, security review and deployment-specific penetration testing.

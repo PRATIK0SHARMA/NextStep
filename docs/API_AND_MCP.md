@@ -7,8 +7,8 @@ All JSON API paths start `/api`. Cookies identify the workspace. Mutations requi
 | Method | Path | Body / result |
 |---|---|---|
 | GET | /health | Liveness + database query |
-| GET | /api/config | Mode, timezone, today and access-code requirement |
-| POST | /api/session | `{ "access_code": "..." }`; creates or resumes cookie session |
+| GET | /api/config | Mode, timezone, today and access_required=false |
+| POST | /api/session | `{}`; creates or resumes an anonymous cookie session without an access code |
 | GET | /api/session | Current session status |
 | GET | /api/tasks | All current workspace task snapshots |
 | POST | /api/tasks | Optional Details fields; returns new snapshot |

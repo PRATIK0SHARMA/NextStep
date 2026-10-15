@@ -1,10 +1,10 @@
 # AI configuration
 
-The app runs immediately in `LLM_PROVIDER=demo`. That mode is deterministic parsing and is labeled; it is NOT an LLM. Switch to one of the configurations below for real model inference. Neither live provider was called during packaging because no model service or user API credentials were supplied.
+The app runs immediately in `LLM_PROVIDER=demo`. That mode is deterministic parsing and is labeled; it is NOT an LLM. Switch to one of the configurations below for real model inference. Groq was exercised during developer testing; live Ollama inference was not verified for this release. Automated adapter tests use simulated responses.
 
 ## Option A — local Ollama
 
-Use the Ollama installation/model already available on your machine, or install from https://ollama.com. List installed models with `ollama list`. If needed, pull a model that supports JSON output and fits your laptop. Model latency and quality must be measured on your RTX 2050 setup; GPU availability is not required by NextStep itself.
+Use the Ollama installation/model already available on your machine, or install from https://ollama.com. List installed models with `ollama list`. If needed, pull a model that supports JSON output and fits your laptop. Model latency and quality must be measured on the target machine; GPU availability is not required by NextStep itself.
 
 Edit `.env`:
 

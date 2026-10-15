@@ -5,34 +5,11 @@ Use free plans and stay within their quotas. Render Free sleeps after inactivity
 Neon can suspend idle compute while retaining database storage. This is a demo
 hosting path, not an always-on service guarantee. Groq usage has separate limits.
 
-## 1. Install this update
+## 1. Prepare the repository
 
-Back up your project. Copy the ZIP contents into the folder containing README.md,
-merging app/, docs/, scripts/, tests/, and .github/. Keep your .env and frontend.
-This update does not replace the existing README. It does not copy local demo
-bookings into Neon: your hosted deployment starts with a fresh workspace.
+Clone the repository and follow README.md for local setup. Install requirements.lock.txt and run pytest. Keep .env, API keys and database files out of Git. Check GitHub Actions: both SQLite and PostgreSQL jobs must pass for the commit being deployed.
 
-In your activated PowerShell terminal:
-
-```powershell
-python -m pip install -r requirements.lock.txt
-python -m pytest -q
-python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --workers 1
-```
-
-DATABASE_URL blank/unset uses your existing local SQLite database. Stop the
-server after the check, then commit:
-
-```powershell
-git add .
-git status
-git commit -m "Add PostgreSQL support and free deployment guide"
-git push
-```
-
-Check GitHub Actions. Both SQLite and PostgreSQL jobs must pass before deployment.
-The PostgreSQL job uses a disposable database. NEVER set NEXTSTEP_TEST_DATABASE_URL
-to Neon or any database with data you want to keep: the tests reset its schema.
+The PostgreSQL CI job uses a disposable database. NEVER set NEXTSTEP_TEST_DATABASE_URL to Neon or any database with data you want to keep: the tests reset its schema. A new hosted database starts fresh; local SQLite bookings are not automatically migrated.
 
 ## 2. Create Neon Free database
 
@@ -68,7 +45,6 @@ Add these in Render, not GitHub:
 | APP_ENV | production |
 | DATABASE_URL | Your private Neon connection URL |
 | PUBLIC_ORIGIN | Exact Render HTTPS URL, no trailing slash/path |
-| ACCESS_CODE | A private random access code generated below |
 | LLM_PROVIDER | compatible |
 | LLM_BASE_URL | https://api.groq.com/openai/v1 |
 | LLM_MODEL | The exact model ID that already works in your local .env |
@@ -76,13 +52,6 @@ Add these in Render, not GitHub:
 | LLM_TIMEOUT | 30 |
 | SESSION_DAYS | 30 |
 
-Generate ACCESS_CODE on your own laptop:
-
-```powershell
-python -c "import secrets; print(secrets.token_urlsafe(24))"
-```
-
-Keep it: visitors need it to open the controlled demo. Do not publish it in README.
 The .python-version file selects Python 3.12. Do not set DATABASE_PATH in Render.
 
 If Render has not assigned a URL yet, initially set PUBLIC_ORIGIN to
@@ -93,7 +62,7 @@ A temporary 400 Invalid host header until this is corrected is expected.
 ## 5. Verify the live deployment
 
 Wait for Render to report Live. Visit /health and check status ok. Open the base
-URL in your normal browser and enter ACCESS_CODE. Enable microphone permission
+URL in your normal browser and start a new request; no access code is required. Enable microphone permission
 and Speaker: on if using speech. Test a new request, preference change, selection,
 and button confirmation. Save another unfinished request, reload, and resume.
 Then use Render's restart control and check the same browser can still see both.
@@ -124,8 +93,7 @@ Store exports privately. Do not rely on free-tier retention as your only backup.
 - Cloud AI error: keep the known-working local model ID; check Groq limits.
 - GitHub tests fail: inspect the failed job before deploying; share redacted errors.
 
-After the live verification, update the public README with the real URL, features,
-architecture, local setup, limits and demonstration instructions.
+Live demo: https://nextstep-298t.onrender.com. Verify saved requests after a restart in the same browser before recording.
 
 References:
 https://render.com/docs/free
